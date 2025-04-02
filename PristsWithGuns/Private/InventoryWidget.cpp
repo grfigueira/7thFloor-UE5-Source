@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "InventoryWidget.h"
+#include "Inventory System/InventoryWidget.h"
 
-#include "InventorySlotWidget.h"
-#include "Item.h"
+#include "Inventory System/InventorySlotWidget.h"
+#include "Interfaces/Item.h"
 #include "Components/WrapBox.h"
 
 void UInventoryWidget::UpdateInventoryState(TArray<TScriptInterface<IItem>> &CurrentInventory) const

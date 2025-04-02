@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "DialogOptionWidget.h"
-#include "IInteractable.h"
+#include "Interfaces/IInteractable.h"
 #include "DialogueParser.h"
 #include "Components/ActorComponent.h"
 #include "ObservableObjectComponent.generated.h"

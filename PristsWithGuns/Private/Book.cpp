@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Book.h"
+#include "Books/Book.h"
 
-#include "BookViewer.h"
+#include "Books/BookViewer.h"
 #include "Blueprint/UserWidget.h"
 #include "PristsWithGuns/PristsWithGunsCharacter.h"
 

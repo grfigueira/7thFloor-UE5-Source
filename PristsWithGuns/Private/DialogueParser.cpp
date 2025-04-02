@@ -1,5 +1,5 @@
 // DialogueParser.cpp
-#include "DialogueParser.h"
+#include "Dialogue System/DialogueParser.h"
 #include "HAL/FileManager.h"
 #include "Misc/FileHelper.h"
 

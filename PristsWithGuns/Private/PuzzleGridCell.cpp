@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "PuzzleGridCell.h"
+#include "GridPuzzles/PuzzleGridCell.h"
 
 // Sets default values
 APuzzleGridCell::APuzzleGridCell()

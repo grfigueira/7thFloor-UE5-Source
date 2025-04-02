@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "DialogOptionWidget.h"
+#include "Dialogue System/DialogOptionWidget.h"
 
 #include "CrosshairWidget.h"
 #include "Components/VerticalBox.h"

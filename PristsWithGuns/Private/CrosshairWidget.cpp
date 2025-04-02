@@ -3,7 +3,7 @@
 
 #include "CrosshairWidget.h"
 
-#include "DialogOptionWidget.h"
+#include "Dialogue System/DialogOptionWidget.h"
 #include "Animation/WidgetAnimation.h"
 #include "Blueprint/WidgetTree.h"
 #include "Components/Button.h"

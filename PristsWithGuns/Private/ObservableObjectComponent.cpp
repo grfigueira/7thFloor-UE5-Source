@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "ObservableObjectComponent.h"
+#include "Dialogue System/ObservableObjectComponent.h"
 #include "CrosshairWidget.h"
 #include "FMODAudioComponent.h"
 #include "Components/TextBlock.h"

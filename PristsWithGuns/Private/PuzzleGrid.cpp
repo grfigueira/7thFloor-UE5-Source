@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "PuzzleGrid.h"
+#include "GridPuzzles/PuzzleGrid.h"
 
-#include "PuzzleData.h"
-#include "PuzzleGridCell.h"
+#include "GridPuzzles/PuzzleData.h"
+#include "GridPuzzles/PuzzleGridCell.h"
 #include "FMODBlueprintStatics.h"
 #include "Camera/CameraComponent.h"
 #include "Components/BoxComponent.h"

@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BookViewer.h"
-#include "PuzzleGrid.h"
+#include "Books/BookViewer.h"
+#include "GridPuzzles/PuzzleGrid.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
 #include "FMODBlueprintStatics.h"

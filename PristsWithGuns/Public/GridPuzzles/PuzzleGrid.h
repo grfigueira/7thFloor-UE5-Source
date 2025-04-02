@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "FMODEvent.h"
-#include "IInteractable.h"
+#include "Interfaces/IInteractable.h"
 #include "PuzzleData.h"
 #include "PuzzleGridCell.h"
 #include "GameFramework/Actor.h"
@@ -18,7 +18,7 @@ struct FGridState
     GENERATED_BODY()
 
     UPROPERTY()
-    TArray<EGridCellType> CellTypes; // for game checks. we are not conserved
+    TArray<EGridCellType> CellTypes; // for game checks. we are not concerned
                                      // with the cell objects themselves, just their types
     UPROPERTY()
     FIntPoint MovablePosition;
