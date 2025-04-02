@@ -13,7 +13,7 @@ If you wish to learn more about the project and see it in action, check it out o
 I am using:
 - Unreal Engine 5.5
 - FMOD for the audio
-- The entire game is programmed in C++, except for a few simple delegate handlings that I'm doing in the level blueprint.
+- The game is programmed entirely in C++, except for a few simple delegate handlings that I'm doing in the level blueprint.
 
 ---
 
