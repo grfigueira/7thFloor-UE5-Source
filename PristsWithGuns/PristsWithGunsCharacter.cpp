@@ -3,6 +3,7 @@
 #include "PristsWithGunsCharacter.h"
 
 #include "CrosshairWidget.h"
+#include "InventoryWidget.h"
 #include "Animation/AnimInstance.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -11,7 +12,9 @@
 #include "EnhancedInputSubsystems.h"
 #include "IInteractable.h"
 #include "InputActionValue.h"
+#include "Inventory.h"
 #include "ObservableObjectComponent.h"
+#include "PauseMenu.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "PuzzleGrid.h"
 #include "Blueprint/UserWidget.h"
@@ -57,11 +60,25 @@ APristsWithGunsCharacter::APristsWithGunsCharacter()
 
 }
 
+
 //////////////////////////////////////////////////////////////////////////// Input
 
-TUniquePtr<UBookViewer> APristsWithGunsCharacter::GetBookWidgetOwnership()
+bool APristsWithGunsCharacter::TryAcquireBookWidgetOwnership(TObjectPtr<UBookViewer> &OutBookViewer)
 {
-    return std::move(BookWidget);
+    if (bIsBookBeingUsed)
+    {
+        return false;
+    }
+
+    bIsBookBeingUsed = true;
+    OutBookViewer = BookWidget;
+    return true;
+
+}
+
+void APristsWithGunsCharacter::ReleaseBookWidget()
+{
+    bIsBookBeingUsed = false;
 }
 
 void APristsWithGunsCharacter::NotifyControllerChanged()
@@ -85,9 +102,6 @@ void APristsWithGunsCharacter::SetupPlayerInputComponent(UInputComponent *Player
     // Set up action bindings
     if (UEnhancedInputComponent *EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
     {
-        // Jumping
-        //EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
-        //EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
         EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this,
                                            &APristsWithGunsCharacter::NextObservation);
@@ -95,7 +109,7 @@ void APristsWithGunsCharacter::SetupPlayerInputComponent(UInputComponent *Player
         // Moving
         EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APristsWithGunsCharacter::Move);
         EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Started, this,
-                                           &APristsWithGunsCharacter::SetMovingTrue);
+                                           &APristsWithGunsCharacter::StartedMoving);
         EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this,
                                            &APristsWithGunsCharacter::SetMovingFalse);
 
@@ -105,12 +119,36 @@ void APristsWithGunsCharacter::SetupPlayerInputComponent(UInputComponent *Player
         // Interacting
         EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this,
                                            &APristsWithGunsCharacter::Interact);
+
+        // Pause Game
+        EnhancedInputComponent->BindAction(PauseGameAction, ETriggerEvent::Started, this,
+                                           &APristsWithGunsCharacter::PauseGame);
+
         /////// Puzzle /////////
 
         EnhancedInputComponent->BindAction(PuzzleMoveAction, ETriggerEvent::Triggered, this,
                                            &APristsWithGunsCharacter::MovePuzzle);
         EnhancedInputComponent->BindAction(PuzzleMoveAction, ETriggerEvent::Completed, this,
                                            &APristsWithGunsCharacter::ResetPuzzleCanMove);
+
+        /////// Book /////////
+
+        EnhancedInputComponent->BindAction(BookLeftSwipe, ETriggerEvent::Started, this,
+                                           &APristsWithGunsCharacter::BookPrevPage);
+
+        EnhancedInputComponent->BindAction(BookRightSwipe, ETriggerEvent::Started, this,
+                                           &APristsWithGunsCharacter::BookNextPage);
+
+        EnhancedInputComponent->BindAction(CloseBook, ETriggerEvent::Started, this,
+                                           &APristsWithGunsCharacter::ExitBookContext);
+
+        /////// Inventory /////////
+        EnhancedInputComponent->BindAction(OpenInventoryAction, ETriggerEvent::Started, this,
+                                           &APristsWithGunsCharacter::OpenInventory);
+
+        EnhancedInputComponent->BindAction(CloseInventoryAction, ETriggerEvent::Started, this,
+                                           &APristsWithGunsCharacter::CloseInventory);
+
     }
     else
     {
@@ -121,14 +159,15 @@ void APristsWithGunsCharacter::SetupPlayerInputComponent(UInputComponent *Player
     }
 }
 
-void APristsWithGunsCharacter::SetMovingTrue()
-{
-    bIsMoving = GetCharacterMovement()->IsMovingOnGround();
-}
 
 void APristsWithGunsCharacter::BeginPlay()
 {
     Super::BeginPlay();
+
+    if (InventoryWidgetClass)
+    {
+        InventoryWidget = CreateWidget<UInventoryWidget>(GetWorld(), InventoryWidgetClass);
+    }
 
     if (CrosshairWidgetClass)
     {
@@ -139,6 +178,15 @@ void APristsWithGunsCharacter::BeginPlay()
         }
     }
 
+    if (BookViewerWidgetClass)
+    {
+        BookWidget = CreateWidget<UBookViewer>(GetWorld(), BookViewerWidgetClass);
+    }
+
+    if (PauseMenuWidgetClass)
+    {
+        PauseMenuWidget = CreateWidget<UPauseMenu>(GetWorld(), PauseMenuWidgetClass);
+    }
 }
 
 
@@ -165,6 +213,65 @@ void APristsWithGunsCharacter::Move(const FInputActionValue &Value)
         AddMovementInput(GetActorForwardVector(), MovementVector.Y * WalkSpeed / 600.0f);
         AddMovementInput(GetActorRightVector(), MovementVector.X * WalkSpeed / 600.0f);
     }
+}
+
+void APristsWithGunsCharacter::OpenInventory()
+{
+
+    if (APlayerController *PlayerController = Cast<APlayerController>(GetController()))
+    {
+        PlayerController->SetShowMouseCursor(true);
+
+        FInputModeGameAndUI InputMode;
+        InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+        PlayerController->SetInputMode(InputMode);
+
+        if (InventoryWidget)
+        {
+            InventoryWidget->AddToViewport();
+        }
+
+        if (UEnhancedInputLocalPlayerSubsystem *Subsystem = ULocalPlayer::GetSubsystem<
+            UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+        {
+            Subsystem->RemoveMappingContext(DefaultMappingContext);
+            Subsystem->AddMappingContext(InventoryMappingContext, 0);
+        }
+    }
+}
+
+void APristsWithGunsCharacter::CloseInventory()
+{
+    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red,
+                                     TEXT("Ivoked CloseInventory"));
+    if (InventoryWidget)
+    {
+        if (APlayerController *PlayerController = Cast<APlayerController>(GetController()))
+        {
+            PlayerController->SetShowMouseCursor(false);
+            FInputModeGameOnly InputMode;
+            PlayerController->SetInputMode(InputMode);
+
+            if (InventoryWidget)
+            {
+                InventoryWidget->RemoveFromParent();
+            }
+            if (UEnhancedInputLocalPlayerSubsystem *Subsystem = ULocalPlayer::GetSubsystem<
+                UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+            {
+                Subsystem->RemoveMappingContext(InventoryMappingContext);
+                Subsystem->AddMappingContext(DefaultMappingContext, 0);
+            }
+        }
+
+    }
+}
+
+void APristsWithGunsCharacter::StartedMoving(const FInputActionValue &Value)
+{
+    FVector2D MovementVector = Value.Get<FVector2D>();
+    bIsMoving = GetCharacterMovement()->IsMovingOnGround();
+
 }
 
 void APristsWithGunsCharacter::Look(const FInputActionValue &Value)
@@ -255,17 +362,68 @@ void APristsWithGunsCharacter::CheckForInteractableInRange()
     }
 }
 
-void APristsWithGunsCharacter::HideCrosshair()
+void APristsWithGunsCharacter::BookPrevPage()
 {
-    if(InteractableInRange)
+    BookWidget->PrevPage();
+}
+
+void APristsWithGunsCharacter::BookNextPage()
+{
+    BookWidget->NextPage();
+}
+
+void APristsWithGunsCharacter::EnterBookContext()
+{
+
+    if (APlayerController *PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0))
     {
-        if(UObservableObjectComponent* ObservableComponent = Cast<UObservableObjectComponent>(InteractableInRange.GetObject()))
+        if (UEnhancedInputLocalPlayerSubsystem *Subsystem = ULocalPlayer::GetSubsystem<
+            UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
         {
-            ObservableComponent->ResetObservation();
-            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("ObservableComponent setting bIsInteracting to false"));
+            Subsystem->RemoveMappingContext(DefaultMappingContext);
+            Subsystem->AddMappingContext(BookMappingContext, 0);
+            if (BookWidget)
+            {
+                BookWidget->AddToViewport();
+            }
         }
     }
-    
+}
+
+void APristsWithGunsCharacter::ExitBookContext()
+{
+
+    BookWidget->CloseBook();
+
+    if (BookWidget)
+    {
+        BookWidget->RemoveFromViewport();
+    }
+    if (APlayerController *PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0))
+    {
+        if (UEnhancedInputLocalPlayerSubsystem *Subsystem = ULocalPlayer::GetSubsystem<
+            UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+        {
+            Subsystem->RemoveMappingContext(BookMappingContext);
+            Subsystem->AddMappingContext(DefaultMappingContext, 0);
+        }
+    }
+    ReleaseBookWidget();
+}
+
+void APristsWithGunsCharacter::HideCrosshair()
+{
+    if (InteractableInRange)
+    {
+        if (UObservableObjectComponent *ObservableComponent = Cast<UObservableObjectComponent>(
+            InteractableInRange.GetObject()))
+        {
+            ObservableComponent->ResetObservation();
+            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red,
+                                             TEXT("ObservableComponent setting bIsInteracting to false"));
+        }
+    }
+
     InteractableInRange = nullptr;
     InteractableActorInRange = nullptr;
     if (bShowingCrosshair)
@@ -395,13 +553,51 @@ void APristsWithGunsCharacter::Interact()
 
 }
 
+void APristsWithGunsCharacter::PauseGame()
+{
+    if (APlayerController *PlayerController = Cast<APlayerController>(GetController()))
+    {
+        PlayerController->SetPause(true);
+        PlayerController->SetShowMouseCursor(true);
+        FInputModeGameAndUI InputMode;
+        InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+        PlayerController->SetInputMode(InputMode);
+
+        if (PauseMenuWidget)
+        {
+            PauseMenuWidget->FadeIn();
+        }
+    }
+
+}
+
+void APristsWithGunsCharacter::UnpauseGame()
+{
+    if (PauseMenuWidget)
+    {
+        if (APlayerController *PlayerController = Cast<APlayerController>(GetController()))
+        {
+            PlayerController->SetPause(false);
+            PlayerController->SetShowMouseCursor(false);
+            FInputModeGameOnly InputMode;
+            PlayerController->SetInputMode(InputMode);
+
+            if (PauseMenuWidget)
+            {
+                PauseMenuWidget->FadeOut();
+            }
+        }
+
+    }
+}
+
 void APristsWithGunsCharacter::NextObservation()
 {
     // if player is looking at an observable object
     if (UObservableObjectComponent *ObservableComponent = Cast<UObservableObjectComponent>(
         InteractableInRange.GetObject()))
     {
-        if(ObservableComponent->bIsInteracting)
+        if (ObservableComponent->bIsInteracting)
         {
             ObservableComponent->NextObservation();
         }

@@ -20,7 +20,7 @@ public:
     UPROPERTY(EditAnywhere)
     FString ReadableType = "Book";
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Puzzle")
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Book")
     FDataTableRowHandle BookDataHandle;
 
 protected:

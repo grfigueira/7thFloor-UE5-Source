@@ -28,16 +28,75 @@ void ABook::Tick(float DeltaTime)
 
 }
 
-void ABook::Interact(ACharacter *Character)
+/*void ABook::Interact(ACharacter *Character)
 {
 
     if(APristsWithGunsCharacter *ActualCharacter = Cast<APristsWithGunsCharacter>(Character))
     {
-        const TUniquePtr<UBookViewer> BookWidget = ActualCharacter->GetBookWidgetOwnership();
-        BookWidget->OpenBook(BookDataHandle);
+        TObjectPtr<UBookViewer> BookViewer;
+        if(ActualCharacter->TryAcquireBookWidgetOwnership(BookViewer))
+        {
+            ActualCharacter->EnterBookContext();
+            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("NEW CODE RUNNING"));
+            if(BookViewer)
+            {
+                BookViewer->OpenBook(BookDataHandle);
+            }
+        }
+        else
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Couldn't acquire book widget"));
+        }
     }
 }
-
+*/
+void ABook::Interact(ACharacter *Character) {
+    // Verify Character is valid
+    if (!Character) {
+        UE_LOG(LogTemp, Warning, TEXT("ABook::Interact - Called with null Character"));
+        return;
+    }
+    
+    // Verify cast to game character
+    APristsWithGunsCharacter *ActualCharacter = Cast<APristsWithGunsCharacter>(Character);
+    if (!ActualCharacter) {
+        UE_LOG(LogTemp, Warning, TEXT("ABook::Interact - Failed to cast Character to APristsWithGunsCharacter"));
+        return;
+    }
+    
+    // Verify BookDataHandle is valid before using it
+    if (BookDataHandle.IsNull()) {
+        UE_LOG(LogTemp, Error, TEXT("ABook::Interact - BookDataHandle is invalid for book: %s"), *GetName());
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Book data is missing or invalid"));
+        return;
+    }
+    
+    // Create a null BookViewer
+    TObjectPtr<UBookViewer> BookViewer = nullptr;
+    
+    // Try to acquire book widget with null check on return
+    bool bAcquiredWidget = false;
+    if (IsValid(ActualCharacter)) {
+        bAcquiredWidget = ActualCharacter->TryAcquireBookWidgetOwnership(BookViewer);
+    }
+    
+    if (!bAcquiredWidget || !BookViewer) {
+        UE_LOG(LogTemp, Warning, TEXT("ABook::Interact - Couldn't acquire book widget"));
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Couldn't acquire book widget"));
+        return;
+    }
+    
+    // Now that we have a valid BookViewer, enter book context
+    ActualCharacter->EnterBookContext();
+    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("NEW CODE RUNNING"));
+    
+    // Final check before calling OpenBook
+    if (IsValid(BookViewer)) {
+        BookViewer->OpenBook(BookDataHandle);
+    } else {
+        UE_LOG(LogTemp, Error, TEXT("ABook::Interact - BookViewer became invalid after acquisition"));
+    }
+}
 FText ABook::GetInteractionText() const
 {
     return FText::FromString("Read book");

@@ -15,41 +15,39 @@ class UFmodEvent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBurnBookCallback);
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PRISTSWITHGUNS_API UObservableObjectComponent : public UActorComponent, public IInteractable
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
-public:	
-	UObservableObjectComponent();
-        UPROPERTY(BlueprintAssignable, Category = "My Delegates")
-        FOnBurnBookCallback BurnBookDelegate;
-    
-        UPROPERTY(EditAnywhere, Category = "Dialogue", meta = (Tooltip = "The text that shows up in the HUD when looking at an interactable"))
-        FString HoverPopupText;
+public:
+    UObservableObjectComponent();
+    UPROPERTY(BlueprintAssignable, Category = "My Delegates")
+    FOnBurnBookCallback BurnBookDelegate;
 
-        UPROPERTY(EditAnywhere, Category="Dialogue", meta=(Tooltip="The file should be located in Content/Data/"))
-        FString JsonFileName;
+    UPROPERTY(EditAnywhere, Category = "Dialogue",
+        meta = (Tooltip = "The text that shows up in the HUD when looking at an interactable"))
+    FString HoverPopupText;
 
-        // True if the player pressed 'e' and the first observations is being displayed
-        bool bIsInteracting;
+    UPROPERTY(EditAnywhere, Category="Dialogue", meta=(Tooltip="The file should be located in Content/Data/"))
+    FString JsonFileName;
+
+    // True if the player pressed 'e' and the first observations is being displayed
+    bool bIsInteracting;
 
 protected:
-    
     TMap<int32, FDialogueNode> Dialogue;
 
     UPROPERTY(EditAnywhere, Category="Observation")
     float Speed = 70;
 
     UPROPERTY(EditAnywhere, Category="Observation")
-    UFmodEvent* SpeechSoundEvent;
+    UFmodEvent *SpeechSoundEvent;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Sound")
-    UFMODAudioComponent* FmodAudioComponent; // typing sound
+    UFMODAudioComponent *FmodAudioComponent; // typing sound
 
 public:
-
-
     UFUNCTION()
     void NextObservation();
 
@@ -66,17 +64,18 @@ public:
     // this will reset most parameters to initial default, stop typing sound, and all that stuff.
     UFUNCTION()
     void ResetObservation();
-    
-    virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+    virtual void TickComponent(float DeltaTime, ELevelTick TickType,
+                               FActorComponentTickFunction *ThisTickFunction) override;
     virtual void BeginPlay() override;
 
     virtual void Interact(class ACharacter *Character) override;
     virtual FText GetInteractionText() const override;
-        void DisplayResponseOptions();
-        void DisplayNextResponse();
+    void DisplayResponseOptions();
+    void DisplayNextResponse();
 
-    private:
-    UCrosshairWidget* CrosshairWidget;
+private:
+    UCrosshairWidget *CrosshairWidget;
     int32 CurrentNodeId;
     bool bIsObsTyping;
     float DelayAccumulator;

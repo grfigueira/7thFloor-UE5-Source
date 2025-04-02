@@ -5,12 +5,10 @@
 
 #include "PuzzleData.h"
 #include "PuzzleGridCell.h"
-#include "../../../Plugins/FMODStudio/Source/FMODStudio/Classes/FMODEvent.h"
 #include "FMODBlueprintStatics.h"
 #include "Camera/CameraComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/ArrowComponent.h"
-#include "Kismet/GameplayStatics.h"
 #include "PristsWithGuns/PristsWithGunsCharacter.h"
 
 // Sets default values
