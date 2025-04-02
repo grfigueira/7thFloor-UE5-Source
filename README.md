@@ -4,7 +4,7 @@ This repository contains only the `Source/` folder of a larger Unreal Engine 5 *
 
 Due to GitHub size limitations, I’ve chosen to upload only the source code to showcase my programming and gameplay systems. I have been using `Diversion` instead of git on my end for complete version control.
 
-This repository is intended for portfolio purposes and to show my current C++ coding style, architecture decisions, and Unreal Engine programming skills.
+This repository is intended for portfolio purposes and to show my current C++ coding style, architecture decisions, and Unreal Engine programming skills. Remember, **the game is not done yet**, so there are classes that will need some cleanup in the future.
 
 If you wish to learn more about the project and see it in action, check it out on my portfolio: https://grfigueira.github.io/projects/7thFloor
 
