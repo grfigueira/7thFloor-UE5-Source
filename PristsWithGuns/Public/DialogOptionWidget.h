@@ -24,9 +24,6 @@ public:
     
     TFunction<void()> ClickedCallback;
 
-    // TODO we might need a simple wrapper for UObservableObjectComponent instead
-    //TSubclassOf<UObservableObjectComponent> OptionWidgetClass;
-
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Option")
     FText OptionTextValue;
 

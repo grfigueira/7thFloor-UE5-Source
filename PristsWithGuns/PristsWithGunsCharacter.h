@@ -197,6 +197,8 @@ private:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
     UInputAction* CloseBook;
 
+    // BookWidget is basically a unique pointer, but unreal doesn't like TUniquePtr with UObjects...
+    // So we simulate it with the methods `TryAcquireBookWidgetOwnership` and `ReleaseBookWidget`
     UPROPERTY()
     TObjectPtr<UBookViewer> BookWidget;
 
