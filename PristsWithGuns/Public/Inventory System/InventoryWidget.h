@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "InventoryWidget.generated.h"
 
+class UBaseItem;
 class UCanvasPanel;
 class UWrapBox;
 class IItem;
@@ -26,6 +27,6 @@ public:
     UPROPERTY(meta = (BindWidget))
     TObjectPtr<UWrapBox> WrapBox;
 
-    void UpdateInventoryState(TArray<TScriptInterface<IItem>> &CurrentInventory) const;
+    void UpdateInventoryState(TArray<TObjectPtr<UBaseItem>> &CurrentInventory) const;
 
 };

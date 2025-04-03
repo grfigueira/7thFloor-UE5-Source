@@ -12,7 +12,6 @@
 #include "EnhancedInputSubsystems.h"
 #include "Interfaces/IInteractable.h"
 #include "InputActionValue.h"
-#include "Inventory System/Inventory.h"
 #include "Dialogue System/ObservableObjectComponent.h"
 #include "Pause Menu/PauseMenu.h"
 #include "GameFramework/CharacterMovementComponent.h"

@@ -9,6 +9,21 @@ public class PristsWithGuns : ModuleRules
 		PrivateDependencyModuleNames.AddRange(new string[] { "EngineCameras", "ActorSequence" });
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "FMODStudio", "FMODStudio", "PhysicsCore", "UMG", "FCTween", "Json" });
+		PublicDependencyModuleNames.AddRange(new string[]
+		{
+			"Core",
+			"CoreUObject",
+			"Engine",
+			"InputCore",
+			"EnhancedInput",
+			"FMODStudio",
+			"FMODStudio",
+			"PhysicsCore",
+			"UMG",
+			"FCTween", // TODO I'm not currently using this
+			"Json",
+			"Slate",
+			"SlateCore" 
+		});
 	}
 }

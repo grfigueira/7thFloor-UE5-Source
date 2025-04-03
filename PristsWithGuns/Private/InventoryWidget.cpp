@@ -3,11 +3,12 @@
 
 #include "Inventory System/InventoryWidget.h"
 
+#include "Components/Image.h"
 #include "Inventory System/InventorySlotWidget.h"
-#include "Interfaces/Item.h"
+#include "Inventory System/BaseItem.h"
 #include "Components/WrapBox.h"
 
-void UInventoryWidget::UpdateInventoryState(TArray<TScriptInterface<IItem>> &CurrentInventory) const
+void UInventoryWidget::UpdateInventoryState(TArray<TObjectPtr<UBaseItem>> &CurrentInventory) const
 {
     if(!WrapBox)
     {
@@ -19,7 +20,7 @@ void UInventoryWidget::UpdateInventoryState(TArray<TScriptInterface<IItem>> &Cur
             {
                 if(CurrentInventory[i])
                 {
-                    SlotWidget->ItemImage = CurrentInventory[i].GetInterface()->GetItemSlotImage();
+                    SlotWidget->ItemImage->SetBrush(CurrentInventory[i]->SlotImage);
                     SlotWidget->ItemImage->SetRenderOpacity(1.0f);
                 }
                 else

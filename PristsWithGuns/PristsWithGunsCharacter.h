@@ -258,8 +258,6 @@ private:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
     UInputAction* CloseInventoryAction;
     
-    TObjectPtr<FInventory> Inventory;
-    
     UPROPERTY()
     TObjectPtr<UInventoryWidget> InventoryWidget;
 
