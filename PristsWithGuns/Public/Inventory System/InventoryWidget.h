@@ -27,6 +27,6 @@ public:
     UPROPERTY(meta = (BindWidget))
     TObjectPtr<UWrapBox> WrapBox;
 
-    void UpdateInventoryState(TArray<TObjectPtr<UBaseItem>> &CurrentInventory) const;
+    void UpdateInventoryState(const TArray<TObjectPtr<UBaseItem>> &CurrentInventory) const;
 
 };

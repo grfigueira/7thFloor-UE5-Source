@@ -11,6 +11,6 @@ struct PRISTSWITHGUNS_API FItemData : public FTableRowBase
     GENERATED_BODY()
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Item")
-    TSoftObjectPtr<UBaseItem> ItemObject;
+    TSubclassOf<UBaseItem> ItemBPClass;
 
 };

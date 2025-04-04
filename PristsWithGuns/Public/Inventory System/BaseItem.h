@@ -29,7 +29,7 @@ public:
     FName DisplayName;
 
     UPROPERTY(EditAnywhere, Category="Item Properties")
-    FSlateBrush SlotImage;; // In inventory
+    TObjectPtr<UTexture2D> SlotImage;; // In inventory
     
 
 };

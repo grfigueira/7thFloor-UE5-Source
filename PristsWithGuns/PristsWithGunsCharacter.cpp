@@ -18,6 +18,7 @@
 #include "GridPuzzles/PuzzleGrid.h"
 #include "Blueprint/UserWidget.h"
 #include "Engine/LocalPlayer.h"
+#include "Inventory System/PlayerInventorySubsystem.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Shakes/LegacyCameraShake.h"
@@ -227,7 +228,14 @@ void APristsWithGunsCharacter::OpenInventory()
 
         if (InventoryWidget)
         {
-            InventoryWidget->AddToViewport();
+            if(UGameInstance* GameInstance = GetGameInstance())
+            {
+                if(UPlayerInventorySubsystem* InventorySubsystem = GameInstance->GetSubsystem<UPlayerInventorySubsystem>())
+                {
+                    InventoryWidget->UpdateInventoryState(InventorySubsystem->GetHeldItems());
+                    InventoryWidget->AddToViewport();
+                }
+            }
         }
 
         if (UEnhancedInputLocalPlayerSubsystem *Subsystem = ULocalPlayer::GetSubsystem<

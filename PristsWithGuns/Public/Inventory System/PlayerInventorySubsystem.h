@@ -16,22 +16,39 @@ class PRISTSWITHGUNS_API UPlayerInventorySubsystem : public UGameInstanceSubsyst
     GENERATED_BODY()
 
 protected:
+
+    // Currently held items by the player
     TArray<TObjectPtr<UBaseItem>> Items;
 
+    // Every possible item in the game 
     UPROPERTY()
-    TObjectPtr<UDataTable> AvailableItems; // Every possible item
-
+    TObjectPtr<UDataTable> ItemRegistry;
 
 public:
-    // Adds an item in the first empty slot it finds
-    void AddItemWhereEmpty(const  TObjectPtr<UBaseItem>);
 
-    // Adds an item in a specific slot
-    void AddItemAt(const TObjectPtr<UBaseItem>, int16);
+    void Initialize(FSubsystemCollectionBase &Collection) override;
+    virtual void Deinitialize() override;
+    
+    // Adds an item in the first empty slot it finds.
+    // returns: false if the inventory is full,
+    //          true otherwise
+    bool AddItemWhereEmpty(FName RowName);
+
+    // Adds an item in a specific slot.
+    // returns: false if there was a item already in that slot
+    //          true if it succeeded.
+    bool AddItemAt(const TObjectPtr<UBaseItem> NewItem, int16 SlotIndex);
 
     // Set the slot to null
-    TObjectPtr<UBaseItem> TakeItemAt(int16 SlotIndex);
+    // returns: false if there slot was empty
+    //          true if it succeeded, with the taken item being
+    //          passed to `OutItem` argument
+
+    bool TakeItemAt(const int16 SlotIndex, TObjectPtr<UBaseItem>& OutItem);
+
+    const TArray<TObjectPtr<UBaseItem>>& GetHeldItems();
 
     void InitializeInventory(int32 Size = 6);
 
+    
 };
