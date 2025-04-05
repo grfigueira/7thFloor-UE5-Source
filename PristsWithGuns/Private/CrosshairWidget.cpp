@@ -17,7 +17,6 @@ void UCrosshairWidget::AddDialogueOption(const FString &OptionText, TFunction<vo
 {
     if(!ResponseWidgetClass)
     {
-        UE_LOG(LogTemp, Error, TEXT("ResponseWidgetClass is null!"));
         return;
     }
     UDialogOptionWidget* ResponseWidget = CreateWidget<UDialogOptionWidget>(GetWorld(), ResponseWidgetClass);
@@ -25,7 +24,7 @@ void UCrosshairWidget::AddDialogueOption(const FString &OptionText, TFunction<vo
     ResponseWidget->OptionText->SetText(FText::FromString(OptionText));
     ResponseWidget->ClickedCallback = OnClickedCallback;
 
-    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, ResponseWidget->OptionTextValue.ToString());
+    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, ResponseWidget->OptionText->GetText().ToString());
     
     if (UVerticalBoxSlot* NewSlot = AnswerBox->AddChildToVerticalBox(ResponseWidget))
     {
@@ -33,6 +32,10 @@ void UCrosshairWidget::AddDialogueOption(const FString &OptionText, TFunction<vo
         NewSlot->SetVerticalAlignment(VAlign_Center);
         NewSlot->SetSize(FSlateChildSize(ESlateSizeRule::Automatic));
         NewSlot->SetPadding(FMargin(0, 0, 0, 10));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("Couldn't add ResponseWidget to AnswerBox!"));
     }
 }
 

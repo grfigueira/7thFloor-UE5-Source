@@ -9,11 +9,11 @@
 #include "Components/ActorComponent.h"
 #include "ObservableObjectComponent.generated.h"
 
+class UDialogueCallbackHandlerSubsystem;
 class UCrosshairWidget;
 class UFMODAudioComponent;
 class UFmodEvent;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBurnBookCallback);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PRISTSWITHGUNS_API UObservableObjectComponent : public UActorComponent, public IInteractable
@@ -22,8 +22,6 @@ class PRISTSWITHGUNS_API UObservableObjectComponent : public UActorComponent, pu
 
 public:
     UObservableObjectComponent();
-    UPROPERTY(BlueprintAssignable, Category = "My Delegates")
-    FOnBurnBookCallback BurnBookDelegate;
 
     UPROPERTY(EditAnywhere, Category = "Dialogue",
         meta = (Tooltip = "The text that shows up in the HUD when looking at an interactable"))
@@ -75,6 +73,7 @@ public:
     void DisplayNextResponse();
 
 private:
+    TObjectPtr<UDialogueCallbackHandlerSubsystem> CallbackHandlerSubsystem; 
     UCrosshairWidget *CrosshairWidget;
     int32 CurrentNodeId;
     bool bIsObsTyping;

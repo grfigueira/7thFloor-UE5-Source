@@ -12,11 +12,9 @@ void UDialogOptionWidget::OnOptionButtonClicked()
 {
     if(ClickedCallback)
     {
-        ClickedCallback();
         
         if(APristsWithGunsCharacter* Character = Cast<APristsWithGunsCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
         {
-            Character->CrosshairWidget->AnswerBox->ClearChildren();
             if (APlayerController* PC = Cast<APlayerController>(Character->GetController()))
             {
                 FInputModeGameOnly InputModeData;
@@ -34,9 +32,9 @@ void UDialogOptionWidget::OnOptionButtonClicked()
                 
                 PC->bShowMouseCursor = false; 
                 
-                
-
             }
         }
+        
+        ClickedCallback();
     }
 }

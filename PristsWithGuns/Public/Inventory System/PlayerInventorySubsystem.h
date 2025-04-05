@@ -32,6 +32,8 @@ public:
     // Adds an item in the first empty slot it finds.
     // returns: false if the inventory is full,
     //          true otherwise
+
+    UFUNCTION(BlueprintCallable)
     bool AddItemWhereEmpty(FName RowName);
 
     // Adds an item in a specific slot.

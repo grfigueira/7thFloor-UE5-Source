@@ -2,9 +2,11 @@
 
 #include "Dialogue System/ObservableObjectComponent.h"
 #include "CrosshairWidget.h"
+#include "DialogueCallbackHandlerSubsystem.h"
 #include "FMODAudioComponent.h"
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
+#include "Inventory System/PlayerInventorySubsystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "PristsWithGuns/PristsWithGunsCharacter.h"
 
@@ -27,17 +29,17 @@ void UObservableObjectComponent::BeginPlay()
 {
     Super::BeginPlay();
 
-    if(JsonFileName.IsEmpty())
+    if (JsonFileName.IsEmpty())
     {
         return;
     }
-    
+
     const FString JsonFilePath = (FPaths::ProjectDir() + "Content/Data/" + JsonFileName);
 
     bool bSuccess;
     Dialogue = FDialogueParser::LoadDialogueFromFile(JsonFilePath, bSuccess);
 
-    if(Dialogue.Num() == 0 && bSuccess)
+    if (Dialogue.Num() == 0 && bSuccess)
     {
         return;
     }
@@ -75,6 +77,18 @@ void UObservableObjectComponent::BeginPlay()
     {
         TempObsString = "This isn't relevant.";
     }
+
+    if (UWorld *World = GetWorld())
+    {
+        if (UGameInstance *GameInstance = World->GetGameInstance())
+        {
+            CallbackHandlerSubsystem = GameInstance->GetSubsystem<UDialogueCallbackHandlerSubsystem>();
+            if (!CallbackHandlerSubsystem)
+            {
+                UE_LOG(LogTemp, Error, TEXT("Error ObservableObjectComponent: Could not fetch InventorySubsystem!"));
+            }
+        }
+    }
 }
 
 void UObservableObjectComponent::Interact(ACharacter *Character)
@@ -100,7 +114,8 @@ void UObservableObjectComponent::Interact(ACharacter *Character)
     }
 }
 
-FText UObservableObjectComponent::GetInteractionText() const { 
+FText UObservableObjectComponent::GetInteractionText() const
+{
     return FText::FromString(HoverPopupText);
 }
 
@@ -119,9 +134,10 @@ void UObservableObjectComponent::DisplayResponseOptions()
 
     if (Dialogue[CurrentNodeId].Responses.Num() > 0)
     {
-        
+
+    UE_LOG(LogTemp, Warning, TEXT("Current nodeID %d | Current Response Index %d | Response.Num %d"), CurrentNodeId, CurrentResponseIndex, Dialogue[CurrentNodeId].Responses.Num());
         if (APristsWithGunsCharacter *Character =
-                Cast<APristsWithGunsCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+            Cast<APristsWithGunsCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
         {
 
             if (APlayerController *PC = Cast<APlayerController>(Character->GetController()))
@@ -143,6 +159,8 @@ void UObservableObjectComponent::DisplayResponseOptions()
         int ResponseNodeId = Dialogue[CurrentNodeId].Responses[CurrentResponseIndex];
         FDialogueNode ResponseNode = Dialogue[ResponseNodeId];
 
+        UE_LOG(LogTemp, Warning, TEXT("%s"), *ResponseNode.Text);
+
         CrosshairWidget->AddDialogueOption(
             ResponseNode.Text,
             [this, ResponseNode]()
@@ -150,9 +168,9 @@ void UObservableObjectComponent::DisplayResponseOptions()
                 CurrentNodeId = ResponseNode.Next_Node_ID;
                 bComingFromResponse = true;
                 NextObservation();
-                GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("In Callback lambda function!!"));
-                // TODO check for callback tags
-                
+                GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("In UI Button Callback lambda function!!"));
+                CallbackHandlerSubsystem->ExecuteFoundCallbacks(Dialogue[ResponseNode.ID].Selected_Callbacks);
+
             });
 
         CurrentResponseIndex++;
@@ -163,24 +181,29 @@ void UObservableObjectComponent::DisplayResponseOptions()
     }
 }
 
-void UObservableObjectComponent::DisplayNextResponse() {}
+void UObservableObjectComponent::DisplayNextResponse()
+{
+} // TODO why is this here?
 
 void UObservableObjectComponent::NextObservation()
 {
-    if (!bIsObsTyping && CurrentNodeId != -1 && Dialogue[CurrentNodeId].Next_Node_ID != -1)
+    if (!bIsObsTyping && CurrentNodeId != -1 && (Dialogue[CurrentNodeId].Next_Node_ID != -1 || Dialogue[CurrentNodeId].Responses.Num() > 0))
     {
         if (APristsWithGunsCharacter *Character =
-                Cast<APristsWithGunsCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+            Cast<APristsWithGunsCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
         {
             Character->CrosshairWidget->StopPlayFlipFlopButtonAnimation();
+            Character->CrosshairWidget->ClearDialogueOptions();
         }
-        
-        if(!bComingFromResponse)
+
+        if (!bComingFromResponse)
         {
             CurrentNodeId = Dialogue[CurrentNodeId].Next_Node_ID;
         }
         bComingFromResponse = false;
         ShowObservation(Dialogue[CurrentNodeId].Text);
+        CallbackHandlerSubsystem->ExecuteFoundCallbacks(Dialogue[CurrentNodeId].Selected_Callbacks);
+
     }
 }
 
@@ -254,12 +277,21 @@ void UObservableObjectComponent::TickComponent(float DeltaTime, ELevelTick TickT
             {
                 bIsObsTyping = false;
 
-                if (Dialogue[CurrentNodeId].Next_Node_ID != -1 && Dialogue[CurrentNodeId].Responses.Num() == 0)
+                if (Dialogue[CurrentNodeId].Next_Node_ID != -1)
                 {
-                    if (APristsWithGunsCharacter *Character =
-                            Cast<APristsWithGunsCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+                    if(Dialogue[CurrentNodeId].Responses.Num() == 0)
                     {
-                        Character->CrosshairWidget->StartPlayFlipFlopButtonAnimation();
+                        if (APristsWithGunsCharacter *Character =
+                            Cast<APristsWithGunsCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+                        {
+                            Character->CrosshairWidget->StartPlayFlipFlopButtonAnimation();
+                        }
+                        // TODO create and set bCanPressNextPhrase to true, to avoid crash when pressing space in a
+                        // "terminal" node or whatever
+                    }
+                    else
+                    {
+                        DisplayResponseOptions();
                     }
                 }
 

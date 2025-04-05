@@ -5,7 +5,6 @@
 
 #include "Inventory System/ItemsData.h"
 
-
 void UPlayerInventorySubsystem::Initialize(FSubsystemCollectionBase &Collection)
 {
     Super::Initialize(Collection);
@@ -17,12 +16,7 @@ void UPlayerInventorySubsystem::Initialize(FSubsystemCollectionBase &Collection)
     InitializeInventory();
 
     // Add first item
-    if (const FItemData *Row = ItemRegistry->FindRow<FItemData>("ElevatorKey01", TEXT("Item Lookup")); Row
-        && Row->ItemBPClass)
-    {
-        TObjectPtr<UBaseItem> NewItem = NewObject<UBaseItem>(this, Row->ItemBPClass);
-        AddItemWhereEmpty("PICard");
-    }
+    AddItemWhereEmpty("PICard");
 
 }
 

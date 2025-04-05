@@ -32,17 +32,6 @@ protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Sound")
     UFMODAudioComponent *FmodAudioComponent;
 
-    /* TODO the book widget should be in the character class
-
-    We should have a widget class with the following methods/data
-     - int currentPageIndex;
-     - void NextPage();
-     - void PrevPage();
-     - void LoadPage(int index);
-     - OpenBook(BookDataHandle& book); // Plays rise animation and darkens background
-     - CloseBook();
-    */
-
 public:
     // Called every frame
     virtual void Tick(float DeltaTime) override;
