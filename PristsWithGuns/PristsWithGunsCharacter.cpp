@@ -12,6 +12,8 @@
 #include "EnhancedInputSubsystems.h"
 #include "Interfaces/IInteractable.h"
 #include "InputActionValue.h"
+#include "NotificationsHolder.h"
+#include "NotificationSubsystem.h"
 #include "Dialogue System/ObservableObjectComponent.h"
 #include "Pause Menu/PauseMenu.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -186,6 +188,16 @@ void APristsWithGunsCharacter::BeginPlay()
     if (PauseMenuWidgetClass)
     {
         PauseMenuWidget = CreateWidget<UPauseMenu>(GetWorld(), PauseMenuWidgetClass);
+    }
+
+    if(NotificationHolderClass)
+    {
+        NotificationHolderWidget = CreateWidget<UNotificationsHolder>(GetWorld(), NotificationHolderClass);
+        if(NotificationHolderWidget)
+        {
+            NotificationHolderWidget->AddToViewport();
+            GetGameInstance()->GetSubsystem<UNotificationSubsystem>()->RegisterNotificationWidget(NotificationHolderWidget);
+        }
     }
 }
 

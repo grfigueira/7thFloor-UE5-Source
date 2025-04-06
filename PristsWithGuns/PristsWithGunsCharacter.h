@@ -11,6 +11,7 @@
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "PristsWithGunsCharacter.generated.h"
 
+class UNotificationsHolder;
 class UInventoryWidget;
 class FInventory;
 class UPauseMenu;
@@ -230,6 +231,9 @@ private:
     
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI", meta = (AllowPrivateAccess = "true"))
     TSubclassOf<UUserWidget> InventoryWidgetClass;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI", meta = (AllowPrivateAccess = "true"))
+    TSubclassOf<UUserWidget> NotificationHolderClass;
 
     UPROPERTY(EditAnywhere)
     TObjectPtr<UPauseMenu> PauseMenuWidget;
@@ -264,7 +268,14 @@ private:
     UFUNCTION()
     void OpenInventory();
     void CloseInventory();
-
+    
+    // ==========================================
+    // Notification system
+    // ==========================================
+    
+    UPROPERTY()
+    TObjectPtr<UNotificationsHolder> NotificationHolderWidget;
+    
     // ==========================================
     // Movement State Tracking
     // ==========================================
