@@ -27,10 +27,20 @@ void UNotification::PlayInventoryAddRoutine(FText Item)
     if (ItemNotificationRiseUp)
     {
         UE_LOG(LogTemp, Display, TEXT("Before PlayAnimation"));
+
+        FWidgetAnimationDynamicEvent AnimationFinishDelegate;
+        AnimationFinishDelegate.BindDynamic(this, &UNotification::OnAnimationEnd);
+        BindToAnimationFinished(ItemNotificationRiseUp, AnimationFinishDelegate);
         PlayAnimation(ItemNotificationRiseUp, 0, 1, EUMGSequencePlayMode::Forward, 1);
+        
     }
     else
     {
         UE_LOG(LogTemp, Error, TEXT("ItemNotificationRiseUp was null"));
     }
+}
+
+void UNotification::OnAnimationEnd()
+{
+    RemoveFromParent();
 }

@@ -7,6 +7,7 @@
 #include "Components/VerticalBox.h"
 #include "NotificationsHolder.generated.h"
 
+class UFmodEvent;
 class UNotification;
 /********************************************************************
  *                      Notifications
@@ -20,6 +21,9 @@ class PRISTSWITHGUNS_API UNotificationsHolder : public UUserWidget
 protected:
     UPROPERTY(meta = (BindWidget))
     TObjectPtr<UVerticalBox> NotificationVerticalBox;
+
+    UPROPERTY(EditAnywhere)
+    TObjectPtr<UFmodEvent> NotificationSound;
     
 public:
 

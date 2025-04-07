@@ -6,6 +6,7 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "NotificationSubsystem.generated.h"
 
+class UFmodEvent;
 class UNotificationsHolder;
 
 /**

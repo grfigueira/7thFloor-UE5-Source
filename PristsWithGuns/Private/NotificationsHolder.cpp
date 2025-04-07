@@ -3,6 +3,7 @@
 
 #include "NotificationsHolder.h"
 
+#include "FMODBlueprintStatics.h"
 #include "Notification.h"
 #include "Components/VerticalBoxSlot.h"
 
@@ -10,7 +11,7 @@ void UNotificationsHolder::PushInventoryAddNotification(FText ItemName)
 {
     UNotification* NotificationWidget = CreateWidget<UNotification>(GetWorld(), NotificationWidgetClass);
     
-    if (UVerticalBoxSlot* NewSlot = NotificationVerticalBox->AddChildToVerticalBox(NotificationVerticalBox))
+    if (UVerticalBoxSlot* NewSlot = NotificationVerticalBox->AddChildToVerticalBox(NotificationWidget))
     {
         NewSlot->SetHorizontalAlignment(HAlign_Center);
         NewSlot->SetVerticalAlignment(VAlign_Center);
@@ -18,5 +19,14 @@ void UNotificationsHolder::PushInventoryAddNotification(FText ItemName)
         NewSlot->SetPadding(FMargin(0, 0, 0, 0));
         
         NotificationWidget->PlayInventoryAddRoutine(ItemName);
+        if(NotificationSound)
+        {
+            UFMODBlueprintStatics::PlayEvent2D(GetWorld(), NotificationSound, true);
+        }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("Couldn't find NotificationSound"));
+        }
+        
     }
 }

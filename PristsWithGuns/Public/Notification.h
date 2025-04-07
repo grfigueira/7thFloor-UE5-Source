@@ -27,5 +27,7 @@ public:
     UFUNCTION()
     void PlayInventoryAddRoutine(FText Item);
     
+    UFUNCTION()
+    void OnAnimationEnd();
 
 };

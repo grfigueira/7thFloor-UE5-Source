@@ -8,8 +8,6 @@
 void UNotificationSubsystem::Initialize(FSubsystemCollectionBase &Collection)
 {
     Super::Initialize(Collection);
-
-    
     
 }
 
@@ -17,18 +15,22 @@ void UNotificationSubsystem::Deinitialize()
 {
     Super::Deinitialize();
 }
-
+     
 void UNotificationSubsystem::RegisterNotificationWidget(TObjectPtr<UNotificationsHolder> NotifHolderWidget)
 {
     NotificationsHolder = NotifHolderWidget;
+    if(NotificationsHolder)
+    {
+        NotificationsHolder->AddToViewport();
+    }
 }
 
 void UNotificationSubsystem::PushInventoryAddNotification(FText ItemName)
 {
     if(NotificationsHolder)
     {
-        NotificationsHolder->AddToViewport();
         NotificationsHolder->PushInventoryAddNotification(ItemName);
+
     }
     else
     {

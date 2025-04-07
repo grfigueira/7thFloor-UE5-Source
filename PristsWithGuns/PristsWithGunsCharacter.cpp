@@ -195,7 +195,6 @@ void APristsWithGunsCharacter::BeginPlay()
         NotificationHolderWidget = CreateWidget<UNotificationsHolder>(GetWorld(), NotificationHolderClass);
         if(NotificationHolderWidget)
         {
-            NotificationHolderWidget->AddToViewport();
             GetGameInstance()->GetSubsystem<UNotificationSubsystem>()->RegisterNotificationWidget(NotificationHolderWidget);
         }
     }

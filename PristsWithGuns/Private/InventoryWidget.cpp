@@ -62,7 +62,7 @@ void UInventoryWidget::UpdateInventoryState(const TArray<TObjectPtr<UBaseItem>>&
                         {
                             UE_LOG(LogTemp, Warning, TEXT("Item at slot %d has valid image"), i);
                             SlotWidget->ItemImage->SetBrushFromTexture(CurrentInventory[i]->SlotImage);
-                            SlotWidget->SlotButton->SetToolTipText(FText::FromName(CurrentInventory[i]->DisplayName));
+                            SlotWidget->SlotButton->SetToolTipText(FText::FromName(CurrentInventory[i]->DisplayName)); // TODO Have had a crash here before.
                             SlotWidget->ItemImage->SetRenderOpacity(1.0f);
                         }
                         else
