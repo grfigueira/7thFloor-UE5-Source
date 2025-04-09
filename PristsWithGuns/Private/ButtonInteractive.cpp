@@ -42,16 +42,6 @@ void AButtonInteractive::Interact(ACharacter *Character)
     }
     OnButtonPressed.Broadcast();
 
-    // TODO == this bellow is temporary, remove later ==
-
-    if (UGameInstance *GameInstance = GetGameInstance())
-    {
-        if (UPlayerInventorySubsystem *InventorySubsystem = GameInstance->GetSubsystem<UPlayerInventorySubsystem>())
-        {
-            InventorySubsystem->AddItemWhereEmpty("ElevatorKey01");
-        }
-    }
-
 }
 
 FText AButtonInteractive::GetInteractionText() const
