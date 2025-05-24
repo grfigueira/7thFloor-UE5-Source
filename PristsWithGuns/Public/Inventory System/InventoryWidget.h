@@ -19,6 +19,9 @@ class PRISTSWITHGUNS_API UInventoryWidget : public UUserWidget
 {
     GENERATED_BODY()
 
+    virtual void NativeConstruct() override;
+    virtual void OnWidgetRebuilt() override;
+
 public:
 
     UPROPERTY(meta = (BindWidget))

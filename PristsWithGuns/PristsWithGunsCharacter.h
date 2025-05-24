@@ -11,6 +11,8 @@
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "PristsWithGunsCharacter.generated.h"
 
+class AItemInspectionDisplay;
+class UItemInspection;
 class UNotificationsHolder;
 class UInventoryWidget;
 class FInventory;
@@ -77,6 +79,9 @@ private:
     
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
     UInputMappingContext* InventoryMappingContext;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+    UInputMappingContext* ItemDisplayMappingContext;
 
     // ==========================================
     // Basic Character Input Actions
@@ -211,6 +216,8 @@ private:
     void BookNextPage();
 
     public:
+    void EnterItemInspectionContext();
+    void ExitItemInspectionContext();
     void EnterBookContext();
     void ExitBookContext();
     bool TryAcquireBookWidgetOwnership(TObjectPtr<UBookViewer>& OutBookViewer);
@@ -234,6 +241,9 @@ private:
     
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI", meta = (AllowPrivateAccess = "true"))
     TSubclassOf<UUserWidget> NotificationHolderClass;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI", meta = (AllowPrivateAccess = "true"))
+    TSubclassOf<UUserWidget> ItemInspectionWidgetClass;
 
     UPROPERTY(EditAnywhere)
     TObjectPtr<UPauseMenu> PauseMenuWidget;
@@ -269,6 +279,35 @@ private:
     void OpenInventory();
     void CloseInventory();
     
+    // ==========================================
+    // Item Inspection system
+    // ==========================================
+    
+    UPROPERTY()
+    TObjectPtr<UItemInspection> ItemInspectionWidget;
+
+    protected:
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+    UInputAction* CloseItemInspectionWidget;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+    UInputAction* RotateItem;
+
+public:
+    UFUNCTION()
+    void OpenItemInspection(TSubclassOf<AItemInspectionDisplay> &ItemClass, const FText&Name) const;
+    
+    UFUNCTION()
+    void CloseItemInspection();
+
+    UFUNCTION()
+    void StartRotatingItem();
+    
+    UFUNCTION()
+    void StopRotatingItem();
+    
+private:
     // ==========================================
     // Notification system
     // ==========================================

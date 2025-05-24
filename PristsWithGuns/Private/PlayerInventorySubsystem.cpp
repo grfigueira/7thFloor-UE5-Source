@@ -25,29 +25,32 @@ void UPlayerInventorySubsystem::Deinitialize()
     Super::Deinitialize();
 }
 
-bool UPlayerInventorySubsystem::AddItemWhereEmpty(FName RowName)
+bool UPlayerInventorySubsystem::AddItemWhereEmpty(const FName RowName)
 {
 
     if (const FItemData *Row = ItemRegistry->FindRow<FItemData>(RowName, TEXT("Item Lookup")); Row
         && Row->ItemBPClass)
     {
-        if (TObjectPtr<UBaseItem> NewItem = NewObject<UBaseItem>(this, Row->ItemBPClass))
+        if (const TObjectPtr<UBaseItem> NewItem = NewObject<UBaseItem>(this, Row->ItemBPClass))
         {
-            for (int16 i = 0; i < Items.Num(); ++i)
+            if (NewItem)
             {
-                if (!Items[i])
+                for (int16 i = 0; i < Items.Num(); ++i)
                 {
-                    Items[i] = NewItem;
-                    return true;
+                    if (!Items[i])
+                    {
+                        Items[i] = NewItem;
+                        return true;
+                    }
                 }
             }
         }
     }
-    
+
     return false;
 }
 
-bool UPlayerInventorySubsystem::AddItemAt(const TObjectPtr<UBaseItem> NewItem, int16 SlotIndex)
+bool UPlayerInventorySubsystem::AddItemAt(const TObjectPtr<UBaseItem> &NewItem, const int16 SlotIndex)
 {
     if (!Items[SlotIndex])
     {

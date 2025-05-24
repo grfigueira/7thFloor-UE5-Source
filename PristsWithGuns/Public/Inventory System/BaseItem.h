@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "BaseItem.generated.h"
 
+class AItemInspectionDisplay;
 class UImage;
 /***********************************************************************
  *   Every game item should inherit from this BaseItem
@@ -26,10 +27,16 @@ public:
     virtual void InspectAction();
 
     UPROPERTY(EditAnywhere, Category="Item Properties")
+    FString ItemId; // should be the same as the row name in the ItemRegistry
+
+    UPROPERTY(EditAnywhere, Category="Item Properties")
     FName DisplayName;
 
     UPROPERTY(EditAnywhere, Category="Item Properties")
-    TObjectPtr<UTexture2D> SlotImage;; // In inventory
+    TObjectPtr<UTexture2D> SlotImage; // In inventory
+
+    UPROPERTY(EditAnywhere, Category="Item Properties")
+    TSubclassOf<AItemInspectionDisplay> ItemDisplayClass;
     
 
 };

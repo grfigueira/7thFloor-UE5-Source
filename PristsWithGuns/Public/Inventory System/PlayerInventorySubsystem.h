@@ -18,6 +18,7 @@ class PRISTSWITHGUNS_API UPlayerInventorySubsystem : public UGameInstanceSubsyst
 protected:
 
     // Currently held items by the player
+    UPROPERTY()
     TArray<TObjectPtr<UBaseItem>> Items;
 
     // Every possible item in the game 
@@ -39,7 +40,7 @@ public:
     // Adds an item in a specific slot.
     // returns: false if there was a item already in that slot
     //          true if it succeeded.
-    bool AddItemAt(const TObjectPtr<UBaseItem> NewItem, int16 SlotIndex);
+    bool AddItemAt(const TObjectPtr<UBaseItem> &NewItem, int16 SlotIndex);
 
     // Set the slot to null
     // returns: false if there slot was empty
