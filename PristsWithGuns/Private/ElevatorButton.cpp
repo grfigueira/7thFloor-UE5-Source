@@ -6,7 +6,7 @@
 
 #include "ActorSequenceComponent.h"
 #include "FMODBlueprintStatics.h"
-#include "MyTweeningSubsystem.h"
+#include "Engine/PointLight.h"
 
 // TODO make a method that waits for a delegate to unlock the button
 
@@ -16,36 +16,40 @@ AElevatorButton::AElevatorButton()
 
 }
 
+
 void AElevatorButton::BeginPlay()
 {
-    Super::BeginPlay();
+    Super::Super::BeginPlay();
 }
 
 void AElevatorButton::Interact(ACharacter *Character)
 {
-    if (!ButtonPressAnim || !ButtonMeshComponent || !PressedMaterial || !ErrorSound)
+    if (!ButtonMeshComponent)
     {
         return;
     }
     
-    ButtonMeshComponent->PlayAnimation(ButtonPressAnim, false);
+    TryToUseLockedButton(); // Implemented in blueprint
 
     if(bIsUnlocked)
     {
-        UFMODBlueprintStatics::PlayEventAttached(SucceessSound, ButtonMeshComponent, NAME_None, FVector::ZeroVector,
-                                                 EAttachLocation::SnapToTarget, true, true, true);
-        ButtonMeshComponent->SetMaterial(0, PressedMaterial);
-    }
-    else
-    {
-        
-        UFMODBlueprintStatics::PlayEventAttached(ErrorSound, ButtonMeshComponent, NAME_None, FVector::ZeroVector,
-                                                 EAttachLocation::SnapToTarget, true, true, true);
-        
-        // TODO set material to an ErrorMaterial
-        
-        OnButtonPressed.Broadcast();     
+        OnButtonPressed.Broadcast();
     }
 
+}
 
+bool AElevatorButton::UseKey(int16 InKeyId)
+{
+    bIsUnlocked = ButtonKeyId == InKeyId;
+    return bIsUnlocked;
+}
+
+void AElevatorButton::LockButton()
+{
+    bIsUnlocked = false;
+}
+
+void AElevatorButton::UnlockButton()
+{
+    bIsUnlocked = true;
 }

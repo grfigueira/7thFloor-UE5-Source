@@ -37,6 +37,9 @@ protected:
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Elevator")
     TObjectPtr<UStaticMeshComponent> Frame;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Elevator")
+    TObjectPtr<UStaticMeshSocket> Socket;
 
 private:
     bool bOpeningDoors;

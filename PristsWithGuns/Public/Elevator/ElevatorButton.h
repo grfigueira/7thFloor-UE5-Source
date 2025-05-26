@@ -16,30 +16,46 @@ UCLASS()
 class PRISTSWITHGUNS_API AElevatorButton : public AButtonInteractive
 {
     GENERATED_BODY()
+
 public:
     AElevatorButton();
 
 protected:
-
-
     UPROPERTY(EditAnywhere, Category="Button")
     TObjectPtr<class UFmodEvent> ErrorSound;
     
     UPROPERTY(EditAnywhere, Category="Button")
     TObjectPtr<UFmodEvent> SucceessSound;
 
-    UPROPERTY(EditAnywhere, Category="Button")
-    TObjectPtr<UCurveFloat> ColorShiftCurve;
+    UPROPERTY(EditAnywhere, Category="Button|Materials")
+    TObjectPtr<UMaterialInstance> ErrorMaterial;
     
     UPROPERTY(EditAnywhere, Category="Button")
-    int16 FloorNumber; // sure, could act like an id for a key
+    int16 ButtonKeyId;
 
     UPROPERTY(EditAnywhere, Category="Button")
     bool bIsUnlocked;
-    
+
+    UFUNCTION(BlueprintImplementableEvent)
+    void TryToUseLockedButton();
+
+
     virtual void BeginPlay() override;
 
 public:
     virtual void Interact(class ACharacter *Character) override;
+
+    UFUNCTION(BlueprintCallable)
+    bool IsButtonLocked() const { return !bIsUnlocked; }
+
+    // Unlocks button if Id corresponds
+    UFUNCTION()
+    bool UseKey(int16 keyId);
+    
+    UFUNCTION(BlueprintCallable)
+    void LockButton();
+    
+    UFUNCTION(BlueprintCallable)
+    void UnlockButton();
 
 };

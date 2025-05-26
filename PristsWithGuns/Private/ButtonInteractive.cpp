@@ -3,7 +3,6 @@
 
 #include "ButtonInteractive.h"
 
-#include "Inventory System/PlayerInventorySubsystem.h"
 
 AButtonInteractive::AButtonInteractive()
 {
