@@ -35,6 +35,17 @@ void AElevator::OpenDoors()
     bOpeningDoors = true;
 }
 
+void AElevator::CloseDoors()
+{
+    LeftTargetPos = DoorLeft->GetRelativeLocation();
+    LeftTargetPos.X += DoorOpenedDistance;
+
+    RightTargetPos = DoorRight->GetRelativeLocation();
+    RightTargetPos.X -= DoorOpenedDistance;
+    
+    bOpeningDoors = true;
+}
+
 
 void AElevator::Tick(float DeltaTime)
 {
@@ -44,7 +55,6 @@ void AElevator::Tick(float DeltaTime)
 
     if (bOpeningDoors)
     {
-
         OpenElevatorDoor(DoorRight, RightTargetPos, bOpeningDoors, DeltaTime);
         OpenElevatorDoor(DoorLeft, LeftTargetPos, bOpeningDoors, DeltaTime);
     }

@@ -15,6 +15,7 @@
 #include "ItemInspection.h"
 #include "NotificationsHolder.h"
 #include "NotificationSubsystem.h"
+#include "SprintBar.h"
 #include "Dialogue System/ObservableObjectComponent.h"
 #include "Pause Menu/PauseMenu.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -109,6 +110,11 @@ void APristsWithGunsCharacter::SetupPlayerInputComponent(UInputComponent *Player
         EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this,
                                            &APristsWithGunsCharacter::SetMovingFalse);
 
+        EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this,
+                                           &APristsWithGunsCharacter::StartedSprinting);
+
+        EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this,
+                                           &APristsWithGunsCharacter::StoppedSprinting);
         // Looking
         EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APristsWithGunsCharacter::Look);
 
@@ -207,6 +213,15 @@ void APristsWithGunsCharacter::BeginPlay()
                 NotificationHolderWidget);
         }
     }
+
+    if (SprintBarWidgetClass)
+    {
+        SprintBarWidget = CreateWidget<USprintBar>(GetWorld(), SprintBarWidgetClass);
+        if (SprintBarWidget)
+        {
+            SprintBarWidget->AddToViewport();
+        }
+    }
 }
 
 void APristsWithGunsCharacter::Move(const FInputActionValue &Value)
@@ -228,8 +243,15 @@ void APristsWithGunsCharacter::Move(const FInputActionValue &Value)
         }
 
         // add movement
-        AddMovementInput(GetActorForwardVector(), MovementVector.Y * WalkSpeed / 600.0f);
-        AddMovementInput(GetActorRightVector(), MovementVector.X * WalkSpeed / 600.0f);
+        if (!bIsSprinting)
+        {
+            AddMovementInput(GetActorForwardVector(), MovementVector.Y * WalkSpeed / 600.0f);
+            AddMovementInput(GetActorRightVector(), MovementVector.X * WalkSpeed / 600.0f);
+        }
+        else{
+            AddMovementInput(GetActorForwardVector(), MovementVector.Y * SprintSpeed / 600.0f);
+            AddMovementInput(GetActorRightVector(), MovementVector.X * SprintSpeed / 600.0f);
+        }
     }
 }
 
@@ -332,6 +354,18 @@ void APristsWithGunsCharacter::StartedMoving(const FInputActionValue &Value)
 {
     FVector2D MovementVector = Value.Get<FVector2D>();
     bIsMoving = GetCharacterMovement()->IsMovingOnGround();
+}
+
+void APristsWithGunsCharacter::StartedSprinting()
+{
+    bIsSprinting = true;
+    SprintBarWidget->StartDrainingStamina();
+}
+
+void APristsWithGunsCharacter::StoppedSprinting()
+{
+    bIsSprinting = false;
+    SprintBarWidget->StopDrainingStamina();
 }
 
 void APristsWithGunsCharacter::Look(const FInputActionValue &Value)

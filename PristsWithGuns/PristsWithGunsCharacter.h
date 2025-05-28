@@ -15,6 +15,7 @@ class AItemInspectionDisplay;
 class UItemInspection;
 class UNotificationsHolder;
 class UInventoryWidget;
+class USprintBar;
 class FInventory;
 class UPauseMenu;
 class UCrosshairWidget;
@@ -40,13 +41,13 @@ public:
     virtual void Tick(float DeltaTime) override;
 
     /** Returns Mesh1P subobject **/
-    USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
-    
+    USkeletalMeshComponent *GetMesh1P() const { return Mesh1P; }
+
     /** Returns FirstPersonCameraComponent subobject **/
-    UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
+    UCameraComponent *GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 
 protected:
-    virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
+    virtual void SetupPlayerInputComponent(UInputComponent *InputComponent) override;
     virtual void BeginPlay() override;
     virtual void NotifyControllerChanged() override;
 
@@ -54,14 +55,14 @@ private:
     // ==========================================
     // Core Character Components
     // ==========================================
-    
+
     /** Pawn mesh: 1st person view (arms; seen only by self) */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Mesh, meta = (AllowPrivateAccess = "true"))
-    USkeletalMeshComponent* Mesh1P;
+    USkeletalMeshComponent *Mesh1P;
 
     /** First person camera */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-    UCameraComponent* FirstPersonCameraComponent;
+    UCameraComponent *FirstPersonCameraComponent;
 
     // ==========================================
     // Input Mapping Contexts
@@ -69,19 +70,19 @@ private:
 
     /** MappingContext */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-    UInputMappingContext* DefaultMappingContext;
+    UInputMappingContext *DefaultMappingContext;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-    UInputMappingContext* PuzzleGridMappingContext;
-    
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-    UInputMappingContext* BookMappingContext;
-    
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-    UInputMappingContext* InventoryMappingContext;
+    UInputMappingContext *PuzzleGridMappingContext;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-    UInputMappingContext* ItemDisplayMappingContext;
+    UInputMappingContext *BookMappingContext;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+    UInputMappingContext *InventoryMappingContext;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+    UInputMappingContext *ItemDisplayMappingContext;
 
     // ==========================================
     // Basic Character Input Actions
@@ -89,36 +90,39 @@ private:
 
     /** Move Input Action */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-    UInputAction* MoveAction;
+    UInputAction *MoveAction;
 
     /** Look Input Action */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-    class UInputAction* LookAction;
+    class UInputAction *LookAction;
 
     /** Jump Input Action */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-    UInputAction* JumpAction;
+    UInputAction *JumpAction;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-    UInputAction* PauseGameAction;
+    UInputAction *PauseGameAction;
     
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+    UInputAction *SprintAction;
+
     // ==========================================
     // Basic Character Input Handlers
     // ==========================================
-    
+
     /** Called for movement input */
-    void Move(const FInputActionValue& Value);
+    void Move(const FInputActionValue &Value);
 
     /** Called for looking input */
-    void Look(const FInputActionValue& Value);
+    void Look(const FInputActionValue &Value);
 
-public: 
+public:
     UFUNCTION()
     void PauseGame();
 
     UFUNCTION(BlueprintCallable)
     void UnpauseGame();
-    
+
 private:
     // ==========================================
     // Character Settings
@@ -132,6 +136,9 @@ private:
 
     UPROPERTY(EditAnywhere, Category = Movement)
     float WalkSpeed = 600.0f;
+    
+    UPROPERTY(EditAnywhere, Category = Movement)
+    float SprintSpeed = 800.0f;
 
     UPROPERTY(EditAnywhere, Category = Movement)
     TSubclassOf<UCameraShakeBase> CameraShake;
@@ -141,7 +148,7 @@ private:
     // ==========================================
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-    UInputAction* InteractAction;
+    UInputAction *InteractAction;
 
     UPROPERTY(EditAnywhere, Category = "Interact")
     float InteractRange = 50.0f;
@@ -150,8 +157,8 @@ private:
     TWeakObjectPtr<AActor> InteractableActorInRange;
     TScriptInterface<IInteractable> InteractableInRange;
 
-    public:
-    void AlertInteractableInRange(AActor* Interactable, bool bInRange)
+public:
+    void AlertInteractableInRange(AActor *Interactable, bool bInRange)
     {
         if (GEngine)
         {
@@ -162,46 +169,46 @@ private:
 
     bool bIsInteracting;
 
-    protected:
+protected:
     void Interact();
-    
+
     UFUNCTION()
     void CheckForInteractableInRange();
-    
-    UActorComponent* HasInteractableComponent(AActor* Actor);
+
+    UActorComponent *HasInteractableComponent(AActor *Actor);
 
     // ==========================================
     // Grid Puzzle System
     // ==========================================
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input|Puzzle", meta = (AllowPrivateAccess = "true"))
-    UInputAction* PuzzleMoveAction;
+    UInputAction *PuzzleMoveAction;
 
-    protected:
-    void MovePuzzle(const FInputActionValue& Value);
-    void ResetPuzzleCanMove(const FInputActionValue& InputActionValue);
-    
-    public:
+protected:
+    void MovePuzzle(const FInputActionValue &Value);
+    void ResetPuzzleCanMove(const FInputActionValue &InputActionValue);
+
+public:
     UFUNCTION(BlueprintCallable)
     void ExitGridPuzzle();
 
-    void EnterGridPuzzle(APuzzleGrid* PuzzleGrid);
+    void EnterGridPuzzle(APuzzleGrid *PuzzleGrid);
 
-    private:
+private:
     bool bPuzzleCanMove;
 
     // ==========================================
     // Book Viewing System
     // ==========================================
-    
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-    UInputAction* BookLeftSwipe;
-    
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-    UInputAction* BookRightSwipe;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-    UInputAction* CloseBook;
+    UInputAction *BookLeftSwipe;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+    UInputAction *BookRightSwipe;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+    UInputAction *CloseBook;
 
     // BookWidget is basically a unique pointer, but unreal doesn't like TUniquePtr with UObjects...
     // So we simulate it with the methods `TryAcquireBookWidgetOwnership` and `ReleaseBookWidget`
@@ -211,16 +218,16 @@ private:
     bool bIsBookBeingUsed;
     bool bCheckBookInput;
 
-    protected:
+protected:
     void BookPrevPage();
     void BookNextPage();
 
-    public:
+public:
     void EnterItemInspectionContext();
     void ExitItemInspectionContext();
     void EnterBookContext();
     void ExitBookContext();
-    bool TryAcquireBookWidgetOwnership(TObjectPtr<UBookViewer>& OutBookViewer);
+    bool TryAcquireBookWidgetOwnership(TObjectPtr<UBookViewer> &OutBookViewer);
     void ReleaseBookWidget();
 
     // ==========================================
@@ -235,23 +242,29 @@ private:
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI", meta = (AllowPrivateAccess = "true"))
     TSubclassOf<UUserWidget> PauseMenuWidgetClass;
-    
+
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI", meta = (AllowPrivateAccess = "true"))
     TSubclassOf<UUserWidget> InventoryWidgetClass;
-    
+
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI", meta = (AllowPrivateAccess = "true"))
     TSubclassOf<UUserWidget> NotificationHolderClass;
-    
+
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI", meta = (AllowPrivateAccess = "true"))
     TSubclassOf<UUserWidget> ItemInspectionWidgetClass;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI", meta = (AllowPrivateAccess = "true"))
+    TSubclassOf<UUserWidget> SprintBarWidgetClass;
 
     UPROPERTY(EditAnywhere)
     TObjectPtr<UPauseMenu> PauseMenuWidget;
 
-    UPROPERTY()
-    UCrosshairWidget* CrosshairWidget;
+    UPROPERTY(EditAnywhere)
+    TObjectPtr<USprintBar> SprintBarWidget;
 
-    private:
+    UPROPERTY()
+    UCrosshairWidget *CrosshairWidget;
+
+private:
     bool bShowingCrosshair;
     void HideCrosshair();
 
@@ -261,79 +274,86 @@ private:
 
     UFUNCTION()
     void NextObservation();
-    
+
     // ==========================================
     // Inventory system
     // ==========================================
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-    UInputAction* OpenInventoryAction;
-    
+    UInputAction *OpenInventoryAction;
+
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-    UInputAction* CloseInventoryAction;
-    
+    UInputAction *CloseInventoryAction;
+
     UPROPERTY()
     TObjectPtr<UInventoryWidget> InventoryWidget;
 
     UFUNCTION()
     void OpenInventory();
     void CloseInventory();
-    
+
     // ==========================================
     // Item Inspection system
     // ==========================================
-    
+
     UPROPERTY()
     TObjectPtr<UItemInspection> ItemInspectionWidget;
 
-    protected:
+protected:
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+    UInputAction *CloseItemInspectionWidget;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-    UInputAction* CloseItemInspectionWidget;
-
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-    UInputAction* RotateItem;
+    UInputAction *RotateItem;
 
 public:
     UFUNCTION()
-    void OpenItemInspection(TSubclassOf<AItemInspectionDisplay> &ItemClass, const FText&Name) const;
-    
+    void OpenItemInspection(TSubclassOf<AItemInspectionDisplay> &ItemClass, const FText &Name) const;
+
     UFUNCTION()
     void CloseItemInspection();
 
     UFUNCTION()
     void StartRotatingItem();
-    
+
     UFUNCTION()
     void StopRotatingItem();
-    
+
 private:
     // ==========================================
     // Notification system
     // ==========================================
-    
+
     UPROPERTY()
     TObjectPtr<UNotificationsHolder> NotificationHolderWidget;
-    
+
     // ==========================================
     // Movement State Tracking
     // ==========================================
 
-    private:
+private:
     bool bIsMoving;
-    void StartedMoving(const FInputActionValue& Value);
-    void SetMovingFalse() { bIsMoving = false; bCheckBookInput = false; }
+    bool bIsSprinting;
+    void StartedMoving(const FInputActionValue &Value);
+    void StartedSprinting();
+    void StoppedSprinting();
+
+    void SetMovingFalse()
+    {
+        bIsMoving = false;
+        bCheckBookInput = false;
+    }
 
     // ==========================================
     // Footstep and Sound System
     // ==========================================
 
-    public:
+public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Sound")
-    UFMODAudioComponent* FmodAudioComponent;
+    UFMODAudioComponent *FmodAudioComponent;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Sound")
-    TMap<UPhysicalMaterial*, float> PhysicalMaterialMap;
+    TMap<UPhysicalMaterial *, float> PhysicalMaterialMap;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Sound")
     bool bPrintDebug;
@@ -344,14 +364,14 @@ private:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Sound")
     float FootstepFrequencyAdjuster = 10.0f;
 
-    private:
+private:
     float FootstepTimeAccumulator;
 
-    protected:
+protected:
     UFUNCTION(BlueprintCallable, Category="Sound")
-    UPhysicalMaterial* GetPhysicalMaterialByLineTrace(const float& OffsetZ, const bool& bDebug);
+    UPhysicalMaterial *GetPhysicalMaterialByLineTrace(const float &OffsetZ, const bool &bDebug);
 
     UFUNCTION(BlueprintCallable, Category="Sound")
-    void SetFootstepsParameter(const UPhysicalMaterial* HitPhysicalMaterial, const bool& bDebug,
-                              const FName ParameterName);
+    void SetFootstepsParameter(const UPhysicalMaterial *HitPhysicalMaterial, const bool &bDebug,
+                               const FName ParameterName);
 };

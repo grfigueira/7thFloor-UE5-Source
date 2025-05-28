@@ -17,6 +17,9 @@ public:
 
     UFUNCTION(BlueprintCallable)
     void OpenDoors();
+    
+    UFUNCTION(BlueprintCallable)
+    void CloseDoors();
 
     UPROPERTY(EditAnywhere)
     float DoorSpeed = 2.0f; // Speed for opening/closing the doors
@@ -27,6 +30,7 @@ public:
 protected:
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaSeconds) override;
+    
     void OpenElevatorDoor(const TObjectPtr<UStaticMeshComponent>& Door, const FVector& TargetPos, bool& IsOpeningDoors, float DeltaTime);
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Elevator")
@@ -37,7 +41,8 @@ protected:
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Elevator")
     TObjectPtr<UStaticMeshComponent> Frame;
-    
+
+    // TODO I don't think this is needed anymore
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Elevator")
     TObjectPtr<UStaticMeshSocket> Socket;
 
